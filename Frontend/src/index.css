@@ -1,0 +1,174 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+/* ================================
+   INDIAN OIL THEME
+================================ */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 215 40% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 40% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 40% 20%;
+
+    /* Indian Oil Blue */
+    --primary: 210 100% 34%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Light Background */
+    --secondary: 210 30% 96%;
+    --secondary-foreground: 215 40% 20%;
+
+    /* Muted */
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 20% 45%;
+
+    /* Indian Oil Orange */
+    --accent: 25 90% 54%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Status */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 76% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 210 20% 90%;
+    --input: 210 20% 92%;
+    --ring: 210 100% 34%;
+
+    --radius: 0.75rem;
+
+    /* Glow Effects */
+    --glow-primary: 0 0 25px hsl(210 100% 34% / 0.35);
+    --glow-accent: 0 0 25px hsl(25 90% 54% / 0.35);
+    --glow-success: 0 0 20px hsl(142 76% 45% / 0.35);
+    --glow-destructive: 0 0 20px hsl(0 84% 60% / 0.35);
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+    --gradient-card: linear-gradient(180deg, #ffffff 0%, #f5f7fa 100%);
+    --gradient-primary: linear-gradient(135deg, #005bac 0%, #0072ce 100%);
+    --gradient-gold: linear-gradient(135deg, #f37021 0%, #ff8c42 100%);
+    --gradient-silver: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+    --gradient-bronze: linear-gradient(135deg, #cd7f32 0%, #a97142 100%);
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 40% 20%;
+    --sidebar-primary: 210 100% 34%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 30% 96%;
+    --sidebar-accent-foreground: 215 40% 20%;
+    --sidebar-border: 210 20% 90%;
+    --sidebar-ring: 210 100% 34%;
+  }
+}
+
+/* ================================
+   BASE STYLES
+================================ */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+/* ================================
+   COMPONENTS
+================================ */
+@layer components {
+  .quiz-card {
+    @apply bg-card rounded-xl border border-border p-6;
+    background: var(--gradient-card);
+  }
+
+  .quiz-input {
+    @apply bg-input border border-border rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all;
+  }
+
+  .quiz-button-primary {
+    @apply px-6 py-3 rounded-lg font-semibold text-primary-foreground transition-all;
+    background: var(--gradient-primary);
+    box-shadow: var(--glow-primary);
+  }
+
+  .quiz-button-primary:hover {
+    box-shadow: 0 0 40px hsl(210 100% 34% / 0.6);
+    transform: scale(1.03);
+  }
+
+  .quiz-button-gold {
+    @apply px-6 py-3 rounded-lg font-semibold;
+    background: var(--gradient-gold);
+    box-shadow: var(--glow-accent);
+  }
+
+  .quiz-timer {
+    @apply font-mono text-6xl font-bold;
+    text-shadow: 0 0 25px currentColor;
+  }
+
+  .answer-option {
+    @apply bg-secondary border-2 border-border rounded-xl p-4 transition-all cursor-pointer;
+  }
+
+  .answer-option:hover {
+    @apply border-primary;
+    box-shadow: var(--glow-primary);
+  }
+
+  .answer-option.correct {
+    @apply border-success;
+    box-shadow: var(--glow-success);
+  }
+
+  .answer-option.incorrect {
+    @apply border-destructive;
+    box-shadow: var(--glow-destructive);
+  }
+
+  .pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% {
+      box-shadow: 0 0 20px hsl(210 100% 34% / 0.4);
+    }
+    50% {
+      box-shadow: 0 0 40px hsl(210 100% 34% / 0.6);
+    }
+  }
+
+  .slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
