@@ -2,31 +2,8 @@ import React, { createContext, useContext, useState, useCallback, useEffect, Rea
 import { User, Question, LeaderboardEntry, QuizState, Session, Answer } from '@/types/quiz';
 import { socket } from "@/socket/socket";
 
-/* ---------------- QUESTIONS ---------------- */
-
-const sampleQuestions: Question[] = [
-  {
-    id: 'q1',
-    sessionId: 1,
-    questionNumber: 1,
-    text: 'What is the capital of France?',
-    options: ['London', 'Berlin', 'Paris', 'Madrid'],
-    correctAnswer: 2,
-    timeLimit: 15,
-  },
-  {
-    id: 'q2',
-    sessionId: 1,
-    questionNumber: 2,
-    text: 'Which planet is known as the Red Planet?',
-    options: ['Venus', 'Mars', 'Jupiter', 'Saturn'],
-    correctAnswer: 1,
-    timeLimit: 15,
-  },
-];
-
 const sessions: Session[] = [
-  { id: 1, name: 'General Knowledge', questions: sampleQuestions, status: 'pending' },
+  { id: 1, name: 'General Knowledge', questions: [], status: 'pending' },  // Questions now from backend
   { id: 2, name: 'Literature & Geography', questions: [], status: 'pending' },
   { id: 3, name: 'Science & Tech', questions: [], status: 'pending' },
 ];
@@ -69,11 +46,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     timeRemaining: 0,
     status: 'waiting',
   });
-
-  const currentQuestion =
-    quizState.status === 'question'
-      ? sessions[quizState.currentSession - 1]?.questions[quizState.currentQuestion]
-      : null;
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
 
   /* ---------------- SOCKET CONNECTION ---------------- */
 
@@ -90,6 +63,14 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLeaderboard(data);
     });
 
+    socket.on("quiz-state-update", (state) => {
+      setQuizState(state);
+    });
+
+    socket.on("question-display", (question) => {
+      setCurrentQuestion(question);
+    });
+
     socket.on("quiz-reset", () => {
       setQuizState({
         currentSession: 1,
@@ -97,57 +78,57 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         timeRemaining: 0,
         status: "waiting",
       });
+      setCurrentQuestion(null);
     });
 
     return () => {
       socket.off("connect");
       socket.off("participant-joined");
       socket.off("leaderboard-update");
+      socket.off("quiz-state-update");
+      socket.off("question-display");
       socket.off("quiz-reset");
     };
   }, []);
 
-
-
   useEffect(() => {
-  if (!isAdmin) return;
+    if (!isAdmin) return;
 
-  // Ask backend for current participants when admin opens dashboard
-  socket.emit("admin-joined");
+    socket.emit("admin-joined");
 
-  socket.on("participant-joined", (users) => {
-    setParticipants(users);
-  });
+    socket.on("participant-joined", (users) => {
+      setParticipants(users);
+    });
 
-  return () => {
-    socket.off("participant-joined");
-  };
-}, [isAdmin]);
+    return () => {
+      socket.off("participant-joined");
+    };
+  }, [isAdmin]);
 
   /* ---------------- TIMER ---------------- */
 
-useEffect(() => {
-  if (quizState.status !== "question") return;
+  useEffect(() => {
+    if (quizState.status !== "question") return;
 
-  const interval = setInterval(() => {
-    setQuizState((prev) => {
-      if (prev.timeRemaining <= 1) {
+    const interval = setInterval(() => {
+      setQuizState((prev) => {
+        if (prev.timeRemaining <= 1) {
+          return {
+            ...prev,
+            timeRemaining: 0,
+            status: "reviewing",
+          };
+        }
+
         return {
           ...prev,
-          timeRemaining: 0,
-          status: "reviewing",
+          timeRemaining: prev.timeRemaining - 1,
         };
-      }
+      });
+    }, 1000);
 
-      return {
-        ...prev,
-        timeRemaining: prev.timeRemaining - 1,
-      };
-    });
-  }, 1000);
-
-  return () => clearInterval(interval);
-}, [quizState.status, quizState.timeRemaining]);
+    return () => clearInterval(interval);
+  }, [quizState.status, quizState.timeRemaining]);
 
   /* ---------------- ACTIONS ---------------- */
 
@@ -179,56 +160,27 @@ useEffect(() => {
   const submitAnswer = (answer: number) => {
     if (!currentUser || !currentQuestion) return;
 
+    const correct = answer === currentQuestion.correctAnswer;
     socket.emit("submit-answer", {
       email: currentUser.email,
-      answer,
+      correct,
     });
   };
 
   const startSession = (sessionId: number) => {
-    socket.emit("start-session", sessionId);
-
-    const firstQ = sessions[sessionId - 1].questions[0];
-    setQuizState({
-      currentSession: sessionId,
-      currentQuestion: 0,
-      timeRemaining: firstQ.timeLimit,
-      status: "question",
-    });
+    socket.emit("start-session", sessionId);  // Emit to backend
   };
 
   const nextQuestion = () => {
     socket.emit("next-question");
-
-    const session = sessions[quizState.currentSession - 1];
-    const next = quizState.currentQuestion + 1;
-
-    if (next >= session.questions.length) {
-      setQuizState(prev => ({ ...prev, status: "leaderboard" }));
-      return;
-    }
-
-    setQuizState({
-      currentSession: quizState.currentSession,
-      currentQuestion: next,
-      timeRemaining: session.questions[next].timeLimit,
-      status: "question",
-    });
   };
 
   const endSession = () => {
     socket.emit("end-session");
-    setQuizState(prev => ({ ...prev, status: "leaderboard" }));
   };
 
   const resetQuiz = () => {
     socket.emit("reset-quiz");
-    setQuizState({
-      currentSession: 1,
-      currentQuestion: 0,
-      timeRemaining: 0,
-      status: "waiting",
-    });
   };
 
   return (
