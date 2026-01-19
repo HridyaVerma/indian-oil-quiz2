@@ -121,29 +121,33 @@ export const AdminDashboard: React.FC = () => {
 
             {/* Session Controls */}
             <div className="quiz-card">
-              <h2 className="text-lg font-semibold mb-4">Session Controls</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {sessions.map((session) => (
-                  <button
-                    key={session.id}
-                    onClick={() => startSession(session.id)}
-                    disabled={session.questions.length === 0}
-                    className={cn(
-                      "p-4 rounded-lg border transition-all",
-                      quizState.currentSession === session.id && quizState.status !== 'waiting'
-                        ? "border-primary bg-primary/20"
-                        : "border-border bg-secondary/50 hover:bg-secondary",
-                      session.questions.length === 0 && "opacity-50 cursor-not-allowed"
-                    )}
-                  >
-                    <div className="font-bold">Session {session.id}</div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {session.questions.length} questions
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
+29          <h2 className="text-lg font-semibold mb-4">Session Controls</h2>
+30          {sessionsLoading ? (
+31            <p className="text-muted-foreground">Loading sessions...</p>  // New: Loading message
+32          ) : (
+33            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+34              {sessions.map((session) => (
+35                <button
+36                  key={session.id}
+37                  onClick={() => startSession(session.id)}
+38                  disabled={session.questions.length === 0}
+39                  className={cn(
+40                    "p-4 rounded-lg border transition-all",
+41                    quizState.currentSession === session.id && quizState.status !== 'waiting'
+42                      ? "border-primary bg-primary/20"
+43                      : "border-border bg-secondary/50 hover:bg-secondary",
+44                    session.questions.length === 0 && "opacity-50 cursor-not-allowed"
+45                  )}
+46                >
+47                  <div className="font-bold">Session {session.id}</div>
+48                  <div className="text-xs text-muted-foreground mt-1">
+49                    {session.questions.length} questions
+50                  </div>
+51                </button>
+52              ))}
+53            </div>
+54          )}
+55        </div>
 
             {/* Action Buttons */}
             <div className="quiz-card">
