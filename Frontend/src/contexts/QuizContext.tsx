@@ -213,7 +213,7 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isAdmin,
         quizState,
         currentQuestion,
-        sessions,
+        sessions,  // Now from state
         leaderboard,
         participants,
         registerUser,
@@ -227,5 +227,5 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     >
       {children}
     </QuizContext.Provider>
-  );
+ );
 };
