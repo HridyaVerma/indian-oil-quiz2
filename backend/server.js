@@ -59,6 +59,11 @@ let quizState = {
   status: 'waiting',
 };
 
+
+app.get('/sessions', (req, res) => {
+39  res.json(sessions);
+40});
+
 /* ---------------- SOCKET EVENTS ---------------- */
 
 io.on("connection", (socket) => {
