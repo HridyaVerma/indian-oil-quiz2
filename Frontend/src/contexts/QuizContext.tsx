@@ -35,6 +35,17 @@ export const useQuiz = () => {
   return ctx;
 };
 
+export const QuestionCard: React.FC<QuestionCardProps> = ({
+  question,
+  timeRemaining,
+  onAnswer,
+  selectedAnswer,
+ showResult = false,
+ disabled = false,
+}) => {
+ if (!question) return null;
+
+  
 export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
