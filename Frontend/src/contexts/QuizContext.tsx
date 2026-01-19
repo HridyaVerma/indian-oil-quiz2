@@ -2,11 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, Rea
 import { User, Question, LeaderboardEntry, QuizState, Session, Answer } from '@/types/quiz';
 import { socket } from "@/socket/socket";
 
-const sessions: Session[] = [
-  { id: 1, name: 'General Knowledge', questions: [], status: 'pending' },  // Questions now from backend
-  { id: 2, name: 'Literature & Geography', questions: [], status: 'pending' },
-  { id: 3, name: 'Science & Tech', questions: [], status: 'pending' },
-];
+
 
 interface QuizContextType {
   currentUser: User | null;
@@ -58,6 +54,22 @@ export const QuizProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     status: 'waiting',
   });
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+
+
+  /* ---------------- FETCH SESSIONS ON LOAD ---------------- */
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const response = await fetch('https://indian-oil-quiz.onrender.com/sessions');  // Adjust URL if local
+        const data = await response.json();
+        setSessions(data);
+      } catch (error) {
+        console.error('Failed to fetch sessions:', error);
+      }
+    };
+    fetchSessions();
+  }, []);  // Runs once on mount
 
   /* ---------------- SOCKET CONNECTION ---------------- */
 
