@@ -59,10 +59,11 @@ let quizState = {
   status: 'waiting',
 };
 
+/* ---------------- ROUTES ---------------- */
 
 app.get('/sessions', (req, res) => {
-39  res.json(sessions);
-40});
+  res.json(sessions);
+});
 
 /* ---------------- SOCKET EVENTS ---------------- */
 
@@ -113,7 +114,7 @@ io.on("connection", (socket) => {
     };
 
     io.emit("quiz-state-update", quizState);
-    io.emit("question-display", session.questions[0]);  // Broadcast first question
+    io.emit("question-display", session.questions[0]);
     console.log(`🎯 Session ${sessionId} started`);
   });
 
